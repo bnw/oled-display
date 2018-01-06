@@ -1,4 +1,3 @@
-
 import * as assert from "assert";
 
 export class Pixel {
@@ -35,9 +34,25 @@ export class PixelArea {
         return this._max;
     }
 
-    empty(){
+    empty() {
         return this._min === null;
     }
+
+    public pixels = function* () {
+        if (this.empty()) {
+            return;
+        }
+        let x = this.min.x;
+        let y = this.min.y;
+        while (y <= this.max.y) {
+            yield new Pixel(x, y);
+            x++;
+            if (x > this.max.x) {
+                x = this.min.x;
+                y++;
+            }
+        }
+    };
 
     private _min: Pixel | null = null;
     private _max: Pixel | null = null;

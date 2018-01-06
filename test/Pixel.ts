@@ -23,4 +23,36 @@ describe('PixelArea class', function () {
         });
     });
 
+    describe('pixels', function () {
+        let pixel_area;
+        beforeEach(function () {
+            pixel_area = new PixelArea();
+            pixel_area.extend(new Pixel(0, 0));
+            pixel_area.extend(new Pixel(9, 9));
+        });
+
+        it('should be iteratable', function () {
+            for (let pixel of pixel_area.pixels()) {
+            }
+        });
+
+        it('should have the correct number of elements', function () {
+            let i = 0;
+            for (let pixel of pixel_area.pixels()) {
+                i++;
+            }
+            assert.equal(i, 100);
+        });
+
+        it('should return distinct elements', function () {
+            let seen_pixels = [];
+            for (let pixel of pixel_area.pixels()) {
+                for(let seen_pixel of seen_pixels){
+                    assert.notDeepEqual(pixel, seen_pixel);
+                }
+                seen_pixels.push(pixel);
+            }
+        });
+    })
+
 });
