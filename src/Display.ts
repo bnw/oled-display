@@ -1,6 +1,5 @@
 import {Pixel, PixelArea} from "./Pixel";
-import {BitBuffer} from 'bitbuffer';
-import * as assert from "assert";
+import {PixelBuffer} from "./PixelBuffer";
 
 export enum Color {
     Black = 0,
@@ -8,7 +7,7 @@ export enum Color {
 }
 
 export interface Canvas {
-    draw_pixels(pixel_colors: BitBuffer, dirty_area: PixelArea): Promise<void>;
+    draw_pixels(pixel_colors: PixelBuffer, dirty_area: PixelArea): Promise<void>;
 }
 
 export interface DisplayConfiguration {
@@ -20,15 +19,14 @@ export interface DisplayConfiguration {
 export class Display {
 
     constructor(private readonly config: DisplayConfiguration) {
-        const num_bits = config.width * config.height;
-        this.pixel_colors = new BitBuffer(num_bits);
         this.dirty_area = new PixelArea();
+        this.pixel_colors = new PixelBuffer(config);
     }
 
     public draw_pixels(pixels: Pixel[], color: Color = Color.White) {
         pixels.forEach(pixel => {
             this.dirty_area.extend(pixel);
-            this.pixel_colors.set(this.get_index(pixel), color);
+            this.pixel_colors.set_color(pixel, color);
         });
         return this;
     }
@@ -39,13 +37,7 @@ export class Display {
         }
     }
 
-    private get_index(pixel: Pixel) {
-        assert(pixel.x < this.config.width);
-        assert(pixel.y < this.config.height);
-        return pixel.x + this.config.width * pixel.y;
-    }
-
-    private pixel_colors: BitBuffer;
     private dirty_area: PixelArea;
+    private pixel_colors: PixelBuffer;
 
 }

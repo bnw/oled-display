@@ -1,8 +1,9 @@
 import {assert} from 'chai';
 import 'mocha';
-import {Display, DisplayConfiguration} from '../src/Display';
+import {Color, Display, DisplayConfiguration} from '../src/Display';
 import * as sinon from "sinon";
-import {Pixel} from "../src/Pixel";
+import {Pixel, PixelArea} from "../src/Pixel";
+import {PixelBuffer} from "../src/PixelBuffer";
 
 describe('Display class', () => {
     let display_configuration: DisplayConfiguration;
@@ -47,34 +48,41 @@ describe('Display class', () => {
             assert(canvas_draw_pixels.notCalled);
         });
 
-        it('should flush correct pixels and area', function () {
-            const pixels = [new Pixel(0, 0), new Pixel(3, 60), new Pixel(1, 1)];
-            display.draw_pixels(pixels);
-            display.flush();
+        describe('calls to canvas.draw_pixels', function () {
+            const drawn_pixels = [new Pixel(0, 0), new Pixel(3, 60), new Pixel(1, 1)];
+            let dirty_area: PixelArea;
+            let pixel_colors: PixelBuffer;
 
-            assert(canvas_draw_pixels.calledOnce, "CanvasFixture.draw_pixels never called");
+            beforeEach(function () {
+                display.draw_pixels(drawn_pixels);
+                display.flush();
+                pixel_colors = canvas_draw_pixels.firstCall.args[0];
+                dirty_area = canvas_draw_pixels.firstCall.args[1];
+            });
 
-            const dirty_area = canvas_draw_pixels.firstCall.args[1];
-            assert.equal(0, dirty_area.min.x);
-            assert.equal(3, dirty_area.max.x);
-            assert.equal(0, dirty_area.min.y);
-            assert.equal(60, dirty_area.max.y);
+            it('should call canvas.draw_pixels once per flush', function () {
+                assert(canvas_draw_pixels.calledOnce, "CanvasFixture.draw_pixels never called");
+            });
 
-            const pixel_colors = canvas_draw_pixels.firstCall.args[0];
-            for (let i = 0; i < display_configuration.width * display_configuration.height; i++) {
-                const expected_pixels = [
-                    display_configuration.width * 0 + 0,
-                    display_configuration.width * 1 + 1,
-                    display_configuration.width * 60 + 3
-                ];
-                const pixel_value = pixel_colors.get(i);
-                if (expected_pixels.indexOf(i) != -1) {
-                    assert.equal(pixel_value, true, "Pixel " + i + " wrongfully inactive");
-                } else {
-                    assert.equal(pixel_value, false, "Pixel " + i + " wrongfully active");
+            it('should flush correct pixels', function () {
+                for (const pixel of dirty_area.pixels()) {
+                    if (drawn_pixels.some(pixel.equals.bind(pixel))) {
+                        assert.equal(pixel_colors.get_color(pixel), Color.White);
+                    } else {
+                        assert.equal(pixel_colors.get_color(pixel), Color.Black);
+                    }
                 }
-            }
+            });
+
+            it('should flush correct area', function () {
+                assert.equal(0, dirty_area.min.x);
+                assert.equal(3, dirty_area.max.x);
+                assert.equal(0, dirty_area.min.y);
+                assert.equal(60, dirty_area.max.y);
+            });
         });
+
+        it('should flush only once when called twice');
 
     });
 });

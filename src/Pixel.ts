@@ -3,9 +3,30 @@ import * as assert from "assert";
 export class Pixel {
     constructor(public x: number, public y: number) {
     }
+
+    public equals(other: Pixel) {
+        return this.x == other.x && this.y == other.y;
+    }
+
+    public to_string() {
+        return "(" + this.x + ", " + this.y + ")";
+    }
+}
+
+export interface PixelAreaConfiguration {
+    width: number | null;
+    height: number | null;
 }
 
 export class PixelArea {
+    constructor(config: PixelAreaConfiguration = {width: null, height: null}) {
+        assert((config.width === null) == ( config.height === null));
+        if (config.width !== null) {
+            this.extend(new Pixel(0, 0));
+            this.extend(new Pixel(config.width - 1, config.height - 1));
+        }
+    }
+
     public extend(pixel: Pixel) {
         if (null === this._min) {
             assert(null === this._max);
