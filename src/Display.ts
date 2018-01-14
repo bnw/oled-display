@@ -31,9 +31,13 @@ export class Display {
         return this;
     }
 
-    public flush() {
+    public flush(): Promise<void> {
         if (!this.dirty_area.empty()) {
-            this.config.canvas.draw_pixels(this.pixel_colors, this.dirty_area);
+            const actually_dirty_area = this.dirty_area;
+            this.dirty_area = new PixelArea(); // clear dirty area
+            return this.config.canvas.draw_pixels(this.pixel_colors, actually_dirty_area);
+        } else {
+            return new Promise<void>(resolve => resolve());
         }
     }
 

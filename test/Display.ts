@@ -8,9 +8,9 @@ import {PixelBuffer} from "../src/PixelBuffer";
 describe('Display class', () => {
     let display_configuration: DisplayConfiguration;
     let canvas_draw_pixels;
+    const resolved_promies = new Promise<void>(resolve => resolve());
 
     beforeEach(function () {
-        const resolved_promies = new Promise<void>(resolve => resolve());
         canvas_draw_pixels = sinon.stub().returns(resolved_promies);
         display_configuration = {
             width: 128,
@@ -43,46 +43,66 @@ describe('Display class', () => {
     });
 
     describe('flush', function () {
-        it('should not draw pixels if flush is called when nothing was drawn', () => {
-            display.flush();
-            assert(canvas_draw_pixels.notCalled);
+        describe('behaviour when there are no dirty pixels', function () {
+            it('should not call canvas_draw_pixels', () => {
+                display.flush();
+                assert(canvas_draw_pixels.notCalled);
+            });
+
+            it('should return a resolved promise', function () {
+                return display.flush().then(function () {
+                    assert(true, 'promise was fulfilled');
+                });
+            });
         });
 
-        describe('calls to canvas.draw_pixels', function () {
+        describe('behaviour when there are dirty pixels', function () {
             const drawn_pixels = [new Pixel(0, 0), new Pixel(3, 60), new Pixel(1, 1)];
             let dirty_area: PixelArea;
             let pixel_colors: PixelBuffer;
-
             beforeEach(function () {
                 display.draw_pixels(drawn_pixels);
+            });
+
+            it('should pass the return value of canvas_draw_pixels', function () {
+                assert.equal(display.flush(), resolved_promies);
+            });
+
+            it('should flush only once when called twice', function(){
                 display.flush();
-                pixel_colors = canvas_draw_pixels.firstCall.args[0];
-                dirty_area = canvas_draw_pixels.firstCall.args[1];
+                display.flush();
+                assert(canvas_draw_pixels.calledOnce, 'canvas_draw_pixels should only be called once');
             });
 
-            it('should call canvas.draw_pixels once per flush', function () {
-                assert(canvas_draw_pixels.calledOnce, "CanvasFixture.draw_pixels never called");
-            });
+            describe('calls to canvas.draw_pixels', function () {
+                beforeEach(function () {
+                    display.flush();
+                    pixel_colors = canvas_draw_pixels.firstCall.args[0];
+                    dirty_area = canvas_draw_pixels.firstCall.args[1];
+                });
 
-            it('should flush correct pixels', function () {
-                for (const pixel of dirty_area.pixels()) {
-                    if (drawn_pixels.some(pixel.equals.bind(pixel))) {
-                        assert.equal(pixel_colors.get_color(pixel), Color.White);
-                    } else {
-                        assert.equal(pixel_colors.get_color(pixel), Color.Black);
+                it('should call canvas.draw_pixels once per flush', function () {
+                    assert(canvas_draw_pixels.calledOnce, "CanvasFixture.draw_pixels never called");
+                });
+
+                it('should flush correct pixels', function () {
+                    for (const pixel of dirty_area.pixels()) {
+                        if (drawn_pixels.some(pixel.equals.bind(pixel))) {
+                            assert.equal(pixel_colors.get_color(pixel), Color.White);
+                        } else {
+                            assert.equal(pixel_colors.get_color(pixel), Color.Black);
+                        }
                     }
-                }
-            });
+                });
 
-            it('should flush correct area', function () {
-                assert.equal(0, dirty_area.min.x);
-                assert.equal(3, dirty_area.max.x);
-                assert.equal(0, dirty_area.min.y);
-                assert.equal(60, dirty_area.max.y);
+                it('should flush correct area', function () {
+                    assert.equal(0, dirty_area.min.x);
+                    assert.equal(3, dirty_area.max.x);
+                    assert.equal(0, dirty_area.min.y);
+                    assert.equal(60, dirty_area.max.y);
+                });
             });
         });
-
-        it('should flush only once when called twice');
 
     });
 });
