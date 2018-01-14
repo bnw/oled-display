@@ -3,7 +3,7 @@ import {Color} from "./Display";
 import * as assert from "assert";
 import {BitBuffer} from 'bitbuffer';
 
-export interface PixelBufferConfiguration{
+export interface PixelBufferConfiguration {
     readonly width: number;
     readonly height: number;
 }
@@ -14,11 +14,15 @@ export class PixelBuffer {
         this.pixel_colors = new BitBuffer(num_bits);
     }
 
-    get_color(pixel : Pixel) : Color{
-        return this.pixel_colors.get(this.get_index(pixel));
+    get_color(pixel: Pixel): Color {
+        if (this.pixel_colors.get(this.get_index(pixel))) {
+            return Color.White;
+        } else {
+            return Color.Black;
+        }
     }
 
-    set_color(pixel : Pixel, color : Color){
+    set_color(pixel: Pixel, color: Color) {
         this.pixel_colors.set(this.get_index(pixel), color);
     }
 
