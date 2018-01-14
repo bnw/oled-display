@@ -5,7 +5,7 @@ import * as sinon from "sinon";
 import {Pixel, PixelArea} from "../src/Pixel";
 import {PixelBuffer} from "../src/PixelBuffer";
 
-describe('Display class', () => {
+describe('Display class', function () {
     let display_configuration: DisplayConfiguration;
     let canvas_draw_pixels;
     const resolved_promies = new Promise<void>(resolve => resolve());
@@ -21,7 +21,7 @@ describe('Display class', () => {
         };
     });
 
-    it('should be constructible', () => {
+    it('should be constructible', function () {
         new Display(display_configuration);
     });
 
@@ -68,7 +68,7 @@ describe('Display class', () => {
                 assert.equal(display.flush(), resolved_promies);
             });
 
-            it('should flush only once when called twice', function(){
+            it('should flush only once when called twice', function () {
                 display.flush();
                 display.flush();
                 assert(canvas_draw_pixels.calledOnce, 'canvas_draw_pixels should only be called once');
@@ -105,4 +105,14 @@ describe('Display class', () => {
         });
 
     });
+
+    describe('draw_shape', function () {
+        it('should call shape.draw with this', function () {
+            const promise = new Promise(resolve => resolve());
+            const shape = {draw: sinon.stub().returns(promise)};
+            assert.equal(display.draw_shape(shape), promise);
+            assert(shape.draw.calledOnce);
+            assert(shape.draw.calledWith(display));
+        })
+    })
 });

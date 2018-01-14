@@ -1,10 +1,13 @@
 import {Pixel, PixelArea} from "./Pixel";
 import {PixelBuffer} from "./PixelBuffer";
+import {Shape} from "./shape/Shape";
 
 export enum Color {
     Black = 0,
     White = 1
 }
+
+export const Colors = [Color.Black, Color.White];
 
 export interface Canvas {
     draw_pixels(pixel_colors: PixelBuffer, dirty_area: PixelArea): Promise<void>;
@@ -39,6 +42,10 @@ export class Display {
         } else {
             return new Promise<void>(resolve => resolve());
         }
+    }
+
+    public draw_shape(shape: Shape): Promise<void> {
+        return shape.draw(this);
     }
 
     private dirty_area: PixelArea;
