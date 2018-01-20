@@ -17,8 +17,11 @@ export class Letter implements Shape {
                 const column_byte = letter_bytes[pixel_column];
                 for (let pixel_row = 0; pixel_row < font.height; pixel_row++) {
                     const pixel_value = (column_byte & Math.pow(2, pixel_row)) != 0;
-                    if(pixel_value) {
-                        display.draw_pixels([new Pixel(pixel_column, pixel_row)], Color.White);
+                    const pixel_to_update = new Pixel(pixel_column + this.position.x, pixel_row + this.position.y);
+                    if (pixel_value) {
+                        display.draw_pixels([pixel_to_update],Color.White);
+                    }else{
+                        display.draw_pixels([pixel_to_update],Color.Black);
                     }
                 }
             }
