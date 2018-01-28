@@ -3,7 +3,7 @@ import {Pixel} from "../Pixel";
 
 
 export interface PixelAcceptor {
-    draw_pixels(pixels: Pixel[], color: Color);
+    draw_pixels(pixels: IterableIterator<Pixel>, color: Color);
 }
 
 export interface Shape {

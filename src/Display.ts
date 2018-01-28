@@ -26,11 +26,11 @@ export class Display {
         this.pixel_colors = new PixelBuffer(config);
     }
 
-    public draw_pixels(pixels: Pixel[], color: Color = Color.White) {
-        pixels.forEach(pixel => {
+    public draw_pixels(pixels: IterableIterator<Pixel>, color: Color = Color.White) {
+        for (const pixel of pixels) {
             this.dirty_area.extend(pixel);
             this.pixel_colors.set_color(pixel, color);
-        });
+        }
         return this;
     }
 
