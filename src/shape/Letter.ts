@@ -13,9 +13,9 @@ export class Letter implements Shape {
     draw(display: PixelAcceptor): Promise<void> {
         return new Promise<void>(resolve => {
             const letter_bytes = this.get_letter_bytes();
-            for (let pixel_column = 0; pixel_column < font.width; pixel_column++) {
+            for (let pixel_column = 0; pixel_column < Letter.letter_width(); pixel_column++) {
                 const column_byte = letter_bytes[pixel_column];
-                for (let pixel_row = 0; pixel_row < font.height; pixel_row++) {
+                for (let pixel_row = 0; pixel_row < Letter.letter_height(); pixel_row++) {
                     const pixel_value = (column_byte & Math.pow(2, pixel_row)) != 0;
                     const pixel_to_update = new Pixel(pixel_column + this.position.x, pixel_row + this.position.y);
                     if (pixel_value) {
@@ -25,7 +25,16 @@ export class Letter implements Shape {
                     }
                 }
             }
+            resolve();
         });
+    }
+
+    public static letter_width(){
+        return font.width;
+    }
+
+    public static letter_height(){
+        return font.height;
     }
 
     private get_letter_bytes(): number[] {

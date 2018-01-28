@@ -33,4 +33,12 @@ describe('Letter class', function () {
         assert(pixel_acceptor.draw_pixels.calledWithMatch([new Pixel(12, 106)], Color.White));
     });
 
+    it('should resolve the promise', function () {
+        const letter = new Letter('.', new Pixel(10,100));
+        const pixel_acceptor = {
+            draw_pixels: sinon.spy()
+        };
+        return letter.draw(pixel_acceptor);
+    });
+
 });
