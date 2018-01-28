@@ -17,7 +17,7 @@ describe('PixelBuffer class', function () {
     });
 
     it('should be initialized to black', function () {
-        for (const pixel of (new PixelArea(config)).pixels()) {
+        for (const pixel of (new PixelArea(new Pixel(0,0), new Pixel(config.width - 1, config.height - 1))).pixels()) {
             assert.equal(pixel_buffer.get_color(pixel), Color.Black);
         }
     });

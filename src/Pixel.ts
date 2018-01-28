@@ -13,18 +13,8 @@ export class Pixel {
     }
 }
 
-export interface PixelAreaConfiguration {
-    width: number | null;
-    height: number | null;
-}
-
 export class PixelArea {
-    constructor(config: PixelAreaConfiguration = {width: null, height: null}) {
-        assert((config.width === null) == ( config.height === null));
-        if (config.width !== null) {
-            this.extend(new Pixel(0, 0));
-            this.extend(new Pixel(config.width - 1, config.height - 1));
-        }
+    constructor(private  _min: Pixel | null = null, private  _max: Pixel | null = null) {
     }
 
     public extend(pixel: Pixel) {
@@ -74,7 +64,4 @@ export class PixelArea {
             }
         }
     };
-
-    private _min: Pixel | null = null;
-    private _max: Pixel | null = null;
 }
