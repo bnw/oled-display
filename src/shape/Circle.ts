@@ -1,11 +1,11 @@
 import {PixelAcceptor, Shape} from "./Shape";
 import {circle} from 'bresenham-zingl';
-import {Pixel} from "../Pixel";
+import {Pixel, PixelInterface} from "../Pixel";
 import {Color} from "../Display";
 
 export class Circle implements Shape {
 
-    constructor(private readonly center: Pixel,
+    constructor(private readonly center: PixelInterface,
                 private readonly radius: number,
                 private readonly color: Color = Color.White) {
     }

@@ -1,20 +1,33 @@
 import * as assert from "assert";
 
-export class Pixel {
+export interface PixelInterface {
+    x: number;
+    y: number;
+}
+
+export class Pixel implements PixelInterface {
     constructor(public x: number, public y: number) {
     }
 
-    public equals(other: Pixel) {
+    static from_xy_object(xy_object: PixelInterface) {
+        return new Pixel(xy_object.x, xy_object.y);
+    }
+
+    public equals(other: PixelInterface) {
         return this.x == other.x && this.y == other.y;
     }
 
     public to_string() {
         return "(" + this.x + ", " + this.y + ")";
     }
+
+    public translate(pixel: PixelInterface) {
+        return new Pixel(this.x + pixel.x, this.y + pixel.y);
+    }
 }
 
 export class PixelArea {
-    constructor(private  _min: Pixel | null = null, private  _max: Pixel | null = null) {
+    constructor(private _min: Pixel | null = null, private _max: Pixel | null = null) {
     }
 
     public extend(pixel: Pixel) {

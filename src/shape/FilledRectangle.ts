@@ -1,11 +1,11 @@
 import {PixelAcceptor, Shape} from "./Shape";
-import {Pixel, PixelArea} from "../Pixel";
+import {Pixel, PixelArea, PixelInterface} from "../Pixel";
 import {Color} from "../Display";
 
 export class FilledRectangle implements Shape {
 
-    constructor(private readonly area: PixelArea,
-                private readonly color: Color = Color.White) {
+    constructor(min: PixelInterface, max: PixelInterface, private readonly color: Color = Color.White) {
+        this.area = new PixelArea(Pixel.from_xy_object(min), Pixel.from_xy_object(max));
     }
 
     draw(display: PixelAcceptor): Promise<void> {
@@ -14,5 +14,7 @@ export class FilledRectangle implements Shape {
             resolve();
         })
     }
+
+    private readonly area: PixelArea;
 
 }
