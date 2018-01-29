@@ -1,7 +1,7 @@
 import {Canvas, Color} from "./Display";
 import {PixelBuffer} from "./PixelBuffer";
 import {PixelArea} from "./Pixel";
-import Jimp = require("jimp");
+const Jimp : any = require("jimp");
 
 export interface ImageFileCanvasConfig {
     readonly width: number;
@@ -46,5 +46,5 @@ export class ImageFileCanvas implements Canvas {
         }
     }
 
-    private readonly image: Jimp.Jimp;
+    private readonly image: any;
 }
