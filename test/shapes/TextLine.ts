@@ -27,4 +27,25 @@ describe('TextLine class', function () {
         text_line.draw(pixel_acceptor);
         assert.equal(3, draw_stub.callCount);
     });
+
+    describe('TextLine.max_num_chars', function(){
+        it('should give the correct number of chars that fit', function(){
+            for(let width = 0; width < 17; width++){
+                const max_num_chars = TextLine.max_num_chars(width);
+                if(width <= 4){
+                    assert.equal(max_num_chars, 0, "width = " + width);
+                }else if(width <= 10){
+                    assert.equal(max_num_chars, 1, "width = " + width);
+                }else if(width <= 16){
+                    assert.equal(max_num_chars, 2, "width = " + width);
+                }
+            }
+        });
+
+        it('should give zero for negative widths', function(){
+            for(let width = 0; width < 17; width++){
+                assert.equal(TextLine.max_num_chars(-width), 0);
+            }
+        })
+    })
 });
