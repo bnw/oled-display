@@ -9,6 +9,11 @@ export enum Color {
 
 export const Colors = [Color.Black, Color.White];
 
+export function other_color(color: Color) {
+    if (color == Color.Black) return Color.White;
+    return Color.Black
+}
+
 export interface Canvas {
     draw_pixels(pixel_colors: PixelBuffer, dirty_area: PixelArea): Promise<void>;
 }
@@ -28,6 +33,10 @@ export class Display {
 
     public draw_pixels(pixels: IterableIterator<Pixel>, color: Color = Color.White) {
         for (const pixel of pixels) {
+            if (pixel.x >= this.config.width || pixel.y >= this.config.height) {
+                console.error("Pixel " + pixel.to_string() + " is out of bounds!");
+                continue;
+            }
             this.dirty_area.extend(pixel);
             this.pixel_colors.set_color(pixel, color);
         }

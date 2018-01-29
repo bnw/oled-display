@@ -1,12 +1,16 @@
 import {PixelAcceptor, Shape} from "./Shape";
 import * as assert from "assert";
-import {Pixel} from "../Pixel";
+import {Pixel, PixelInterface} from "../Pixel";
 import font = require('oled-font-5x7');
-import {Color} from "../Display";
+import {Color, other_color} from "../Display";
 
 export class Letter implements Shape {
 
-    constructor(private readonly letter: string, private readonly position: Pixel = new Pixel(0, 0)) {
+    constructor(
+        private readonly letter: string,
+        private readonly position: PixelInterface = new Pixel(0, 0),
+        private readonly color: Color = Color.White
+    ) {
         assert(letter.length == 1);
     }
 
@@ -19,9 +23,9 @@ export class Letter implements Shape {
                     const pixel_value = (column_byte & Math.pow(2, pixel_row)) != 0;
                     const pixel_to_update = new Pixel(pixel_column + this.position.x, pixel_row + this.position.y);
                     if (pixel_value) {
-                        display.draw_pixels([pixel_to_update],Color.White);
-                    }else{
-                        display.draw_pixels([pixel_to_update],Color.Black);
+                        display.draw_pixels([pixel_to_update], this.color);
+                    } else {
+                        display.draw_pixels([pixel_to_update], other_color(this.color));
                     }
                 }
             }
@@ -29,11 +33,11 @@ export class Letter implements Shape {
         });
     }
 
-    public static letter_width(){
+    public static letter_width() {
         return font.width;
     }
 
-    public static letter_height(){
+    public static letter_height() {
         return font.height;
     }
 
