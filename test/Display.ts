@@ -108,7 +108,7 @@ describe('Display class', function () {
 
     describe('draw_shape', function () {
         it('should call shape.draw with this', function () {
-            const promise = new Promise(resolve => resolve());
+            const promise = new Promise<void>(resolve => resolve());
             const shape = {draw: sinon.stub().returns(promise)};
             assert.equal(display.draw_shape(shape), promise);
             assert(shape.draw.calledOnce);
